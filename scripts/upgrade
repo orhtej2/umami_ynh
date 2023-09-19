@@ -123,7 +123,7 @@ pushd $final_path
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn update-db || true
 	if ynh_compare_current_package_version --comparison lt --version 1.33.1~ynh1
 	then
-		exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm x prisma migrate resolve --applied "01_init"
+		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm x prisma migrate resolve --applied "01_init"
 	fi
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn update-db
 popd
