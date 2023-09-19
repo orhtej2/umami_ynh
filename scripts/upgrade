@@ -83,7 +83,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=5
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path" --keep=".env"
+	ynh_setup_source --dest_dir="$final_path" --keep=".env" --full_replace=1
 fi
 
 chmod 750 "$final_path"
@@ -120,6 +120,11 @@ ynh_script_progression --message="Configuring the app..." --weight=15
 pushd $final_path
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn install #--production
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn build
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn update-db || true
+	if ynh_compare_current_package_version --comparison lt --version 1.33.1~ynh1
+	then
+		exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH npx prisma migrate resolve --applied "01_init"
+	fi
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH yarn update-db
 popd
 
